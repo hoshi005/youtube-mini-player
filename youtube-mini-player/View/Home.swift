@@ -21,7 +21,39 @@ struct Home: View {
                 Text(Tab.you.rawValue)
                     .setupTab(.you)
             }
+            .padding(.bottom, tabBarHeight)
+            
+            customTabBar()
         }
+        .ignoresSafeArea(.all, edges: .bottom)
+    }
+    
+    /// カスタムタブバー.
+    @ViewBuilder
+    private func customTabBar() -> some View {
+        HStack(spacing: 0.0) {
+            ForEach(Tab.allCases, id: \.rawValue) { tab in
+                VStack(spacing: 4.0) {
+                    Image(systemName: tab.symbol)
+                        .font(.title3)
+                    Text(tab.rawValue)
+                        .font(.caption2)
+                }
+                .foregroundStyle(activeTab == tab ? Color.primary : .gray)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(.rect)
+                .onTapGesture {
+                    activeTab = tab
+                }
+            }
+        }
+        .frame(height: 49)
+        .overlay(alignment: .top) {
+            Divider()
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .frame(height: tabBarHeight)
+        .background(.background)
     }
 }
 
@@ -30,6 +62,18 @@ extension View {
     func setupTab(_ tab: Tab) -> some View {
         self.tag(tab)
             .toolbar(.hidden, for: .tabBar)
+    }
+    
+    var safeArea: UIEdgeInsets {
+        if let safeArea = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.keyWindow?.safeAreaInsets {
+            return safeArea
+        }
+        
+        return .zero
+    }
+    
+    var tabBarHeight: CGFloat {
+        return 49 + safeArea.bottom
     }
 }
 
