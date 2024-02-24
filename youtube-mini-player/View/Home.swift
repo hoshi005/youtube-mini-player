@@ -12,7 +12,7 @@ struct Home: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $activeTab) {
-                Text(Tab.home.rawValue)
+                homeTabView()
                     .setupTab(.home)
                 Text(Tab.shorts.rawValue)
                     .setupTab(.shorts)
@@ -26,6 +26,35 @@ struct Home: View {
             customTabBar()
         }
         .ignoresSafeArea(.all, edges: .bottom)
+    }
+    
+    /// Home Tab
+    @ViewBuilder
+    func homeTabView() -> some View {
+        NavigationStack {
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 16) {
+                    ForEach(items) {item in
+                        playerItemCardView(item)
+                    }
+                }
+                .padding(16)
+            }
+            .navigationTitle("Youtube")
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.background, for: .navigationBar)
+        }
+    }
+    
+    @ViewBuilder
+    func playerItemCardView(_ item: PlayerItem) -> some View {
+        VStack(alignment: .leading, spacing: 6.0) {
+            Image(item.image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 180)
+                .clipShape(.rect(cornerRadius: 10))
+        }
     }
     
     /// カスタムタブバー.
